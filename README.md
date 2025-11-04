@@ -11,7 +11,7 @@ This API powers a furniture marketplace with three distinct user roles and a com
 - **Consumers**: Browse approved listings and manage shopping cart
 
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 - Node.js 18+ 
