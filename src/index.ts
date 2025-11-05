@@ -66,12 +66,12 @@ const startServer = async (): Promise<void> => {
 
     // Démarrer le serveur
     app.listen(port, () => {
-      console.log(`🚀 Server is running on http://localhost:${port}`);
-      console.log(`📊 Environment: ${process.env.NODE_ENV || 'development'}`);
-      console.log(`🌐 CORS enabled for: ${process.env.FRONTEND_URL || 'http://localhost:3001'}`);
+      console.log(`Server is running on http://localhost:${port}`);
+      console.log(`Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`CORS enabled for: ${process.env.FRONTEND_URL || 'http://localhost:3001'}`);
     });
   } catch (error) {
-    console.error('❌ Erreur lors du démarrage:', error);
+    console.error('Erreur lors du démarrage:', error);
     process.exit(1);
   }
 };
