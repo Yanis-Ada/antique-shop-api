@@ -16,7 +16,6 @@ This API powers a furniture marketplace with three distinct user roles and a com
 ### Prerequisites
 - Node.js 18+ 
 - npm or yarn
-- Git
 
 ### Installation
 
