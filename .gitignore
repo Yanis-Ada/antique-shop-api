@@ -58,3 +58,4 @@ Thumbs.db
 # Uploads/Images (si stockage local)
 uploads/
 public/images/uploads/
+/src/generated/prisma
