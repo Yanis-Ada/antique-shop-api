@@ -35,7 +35,7 @@ app.use(session({
 // Route de test simple
 app.get('/', (_req: Request, res: Response) => {
   res.json({
-    message: 'Antique Shop API is running! 🏺',
+    message: 'Antique Shop API is running',
     version: '1.0.0',
     environment: process.env.NODE_ENV || 'development',
   });
@@ -58,11 +58,11 @@ app.use('*', (req: Request, res: Response) => {
 });
 
 // Fonction de démarrage avec initialisation de la base
-const startServer = async (): Promise<void> => {
+async function startServer(): Promise<void> {
   try {
     // Initialiser la base de données
     await initializeDatabase();
-    console.log('🗄️ Base de données initialisée');
+    console.log('Base de données initialisée');
 
     // Démarrer le serveur
     app.listen(port, () => {

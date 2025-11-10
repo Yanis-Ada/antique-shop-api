@@ -5,8 +5,9 @@
     "lib": ["ES2020"],                     // Bibliothèques TypeScript disponibles
     "outDir": "./dist",                    // Dossier de sortie après compilation
     "rootDir": "./src",                    // Dossier source
-    "strict": true,                        // Mode strict (recommandé)
     "esModuleInterop": true,               // Compatibilité imports ES6/CommonJS
+    "allowSyntheticDefaultImports": true,  // Permet les imports par défaut
+    "strict": true,                        // Mode strict (recommandé)             
     "skipLibCheck": true,                  // Accélère la compilation
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,             // Permet d'importer des fichiers JSON
