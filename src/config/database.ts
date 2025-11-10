@@ -17,7 +17,7 @@ export class Database {
     }
 
     // Créer la connexion SQLite
-    this.db = new sqlite3.Database(dbPath, (err) => {
+    this.db = new sqlite3.Database(dbPath, err => {
       if (err) {
         console.error('❌ Erreur connexion base de données:', err.message);
       } else {
@@ -131,9 +131,15 @@ export class Database {
       `);
 
       // Index pour optimiser les requêtes
-      await this.run('CREATE INDEX IF NOT EXISTS idx_products_status ON products (status)');
-      await this.run('CREATE INDEX IF NOT EXISTS idx_products_seller ON products (seller_id)');
-      await this.run('CREATE INDEX IF NOT EXISTS idx_cart_user ON cart_items (user_id)');
+      await this.run(
+        'CREATE INDEX IF NOT EXISTS idx_products_status ON products (status)'
+      );
+      await this.run(
+        'CREATE INDEX IF NOT EXISTS idx_products_seller ON products (seller_id)'
+      );
+      await this.run(
+        'CREATE INDEX IF NOT EXISTS idx_cart_user ON cart_items (user_id)'
+      );
 
       console.log('✅ Tables marketplace initialisées avec succès');
     } catch (error) {
@@ -145,7 +151,7 @@ export class Database {
   // Fermer la connexion
   public close(): Promise<void> {
     return new Promise((resolve, reject) => {
-      this.db.close((err) => {
+      this.db.close(err => {
         if (err) {
           reject(err);
         } else {
@@ -165,16 +171,14 @@ export const initializeDatabase = (): Promise<void> => {
   return db.initTables();
 };
 
-
-
 // Gestion propre de l'arrêt de l'application
 process.on('SIGINT', async () => {
-  console.log('\n🛑 Arrêt de l\'application...');
+  console.log("\n🛑 Arrêt de l'application...");
   try {
     await db.close();
     process.exit(0);
   } catch (error) {
-    console.error('❌ Erreur lors de l\'arrêt:', error);
+    console.error("❌ Erreur lors de l'arrêt:", error);
     process.exit(1);
   }
 });
