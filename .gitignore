@@ -59,3 +59,7 @@ Thumbs.db
 uploads/
 public/images/uploads/
 /src/generated/prisma
+
+# Fichiers de backup temporaires
+backup/
+*.backup.db
