@@ -3,11 +3,12 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import session from 'express-session';
 import { initializeDatabase } from './config/database';
+import userRoutes from './routes/userRoutes';
 
 // Charger les variables d'environnement
 dotenv.config();
 
-// Créer l'application Express
+// Créer l'application Express. le "chef d'orchestre" qui gère toutes les requêtes
 const app: Express = express();
 const port = process.env.PORT || 3000;
 
@@ -31,6 +32,10 @@ app.use(session({
     maxAge: 24 * 60 * 60 * 1000, // 24 heures
   },
 }));
+
+// Routes de l'API utilisateurs
+app.use('/api', userRoutes);
+
 
 // Route de test simple
 app.get('/', (_req: Request, res: Response) => {
