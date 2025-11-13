@@ -122,4 +122,31 @@ export class UserController {
             res.status(500).json({ error: "Erreur serveur lors de la mise à jour de l'utilisateur." });
         }
     }
+
+    static async deleteUser(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = Number(req.params.id);
+
+            // Vérifie que l'ID est valide
+            if (isNaN(userId)) {
+                res.status(400).json({ error: "Id utilisateur invalide." });
+                return;
+            }
+
+            // Vérifie que l'utilisateur existe
+            const existingUser = await prisma.user.findUnique({ where: { id: userId } });
+            if (!existingUser) {
+                res.status(404).json({ error: "Utilisateur non trouvé." });
+                return;
+            }
+
+            // Supprime l'utilisateur
+            await prisma.user.delete({ where: { id: userId } });
+
+            res.status(204).send(); // 204 = No Content
+        } catch (error) {
+            console.error("Erreur lors de la suppression de l'utilisateur:", error);
+            res.status(500).json({ error: "Erreur serveur lors de la suppression de l'utilisateur." });
+        }
+    }
 }
