@@ -14,21 +14,19 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-// ...existing code...
-
-model User {
-  id        Int      @id @default(autoincrement())
-  email     String   @unique
-  firstName      String
-  lastName       String
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
-
-  @@map("user")
-}
-
 enum Role {
   SELLER
   ADMIN
   CONSUMER
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  email     String   @unique
+  firstName String
+  lastName  String
+  role      Role     @default(SELLER)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  @@map("user")
 }
