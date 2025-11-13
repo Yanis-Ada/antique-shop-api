@@ -19,10 +19,8 @@ datasource db {
 model User {
   id        Int      @id @default(autoincrement())
   email     String   @unique
-  googleId  String?  @unique @map("google_id")
-  name      String
-  role      Role     @default(CONSUMER)
-  avatarUrl String?  @map("avatar_url")
+  firstName      String
+  lastName       String
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 
