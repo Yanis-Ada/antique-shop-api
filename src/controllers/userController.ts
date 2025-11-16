@@ -1,53 +1,56 @@
 import { Request, Response } from "express";
 import { PrismaClient } from "../generated/prisma/index.js";
+import bcrypt from 'bcrypt';
+import jwt from 'jsonwebtoken';
 
+const JWT_SECRET = process.env.JWT_SECRET || "dev_secret";
 const prisma = new PrismaClient();
+
+function isValidPassword(password: string): boolean {
+  const regex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/;
+  return regex.test(password);
+}
 
 export class UserController {
     static async createUser(req: Request, res: Response): Promise<void> {
-        console.log("🚀 UserController.createUser appelé");
-        console.log("📦 Données reçues (req.body):", req.body);
+        console.log("UserController.createUser appelé");
+        console.log("Données reçues (req.body):", req.body);
 
         try {
-            // On récupère les nouveaux champs du modèle
-            const { email, firstName, lastName } = req.body;
-
-            console.log("📋 Données extraites:");
-            console.log("  - email:", email);
-            console.log("  - firstName:", firstName);
-            console.log("  - lastName:", lastName);
+            const { email, firstName, lastName, password, role } = req.body;
 
             // Validation des données obligatoires
-            if (!email || !firstName || !lastName) {
-                console.log("❌ Validation échouée: email, firstName ou lastName manquant");
-                res.status(400).json({ error: "Email, prénom et nom sont obligatoires." });
+            if (!email || !firstName || !lastName || !password) {
+                res.status(400).json({ error: "Email, prénom, nom et mot de passe sont obligatoires." });
                 return;
             }
 
-            console.log("✅ Validation réussie, tentative de création en base...");
+            // Validation de la complexité du mot de passe
+            if (!isValidPassword(password)) {
+                res.status(400).json({ error: "Mot de passe trop faible. Il doit contenir au moins 8 caractères, une majuscule, une minuscule et un chiffre." });
+                return;
+            }
 
-            // Création de l'utilisateur avec les nouveaux champs
+            // Hash du mot de passe
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Création de l'utilisateur
             const user = await prisma.user.create({
                 data: {
                     email,
                     firstName,
                     lastName,
+                    password: hashedPassword,
+                    role: role || "SELLER", // Par défaut SELLER si non précisé
                 },
             });
-            console.log("🎉 Utilisateur créé avec succès:", user);
 
-            res.status(201).json(user);
+            // On ne retourne jamais le mot de passe !
+            res.status(201).json({ id: user.id, email: user.email, role: user.role });
             return;
 
         } catch (error) {
-            console.log("💥 Erreur dans createUser:");
-            if (error instanceof Error) {
-                console.log("  - Type d'erreur:", error.constructor.name);
-                console.log("  - Message:", error.message);
-                console.log("  - Stack:", error.stack);
-            } else {
-                console.log("  - Erreur non standard:", error);
-            }
+            console.log("Erreur dans createUser:", error);
             res.status(500).json({ error: "Erreur lors de la création de l'utilisateur." });
             return;
         }
@@ -147,6 +150,43 @@ export class UserController {
         } catch (error) {
             console.error("Erreur lors de la suppression de l'utilisateur:", error);
             res.status(500).json({ error: "Erreur serveur lors de la suppression de l'utilisateur." });
+        }
+    }
+
+    static async login(req: Request, res: Response): Promise<void> {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            res.status(400).json({ error: "Email et mot de passe requis." });
+            return;
+        }
+
+        try {
+            const user = await prisma.user.findUnique({ where: { email } });
+
+            // Message d'erreur générique pour éviter de donner des infos à un attaquant
+            if (!user) {
+                res.status(401).json({ error: "Identifiants invalides." });
+                return;
+            }
+
+            // Vérification du mot de passe
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                res.status(401).json({ error: "Identifiants invalides." });
+                return;
+            }
+
+            // Génération du JWT
+            const token = jwt.sign(
+                { userId: user.id, role: user.role },
+                JWT_SECRET,
+                { expiresIn: "15min" }
+            );
+
+            res.status(200).json({ token, user: { id: user.id, email: user.email, role: user.role } });
+        } catch (error) {
+            res.status(500).json({ error: "Erreur serveur lors de la connexion." });
         }
     }
 }
