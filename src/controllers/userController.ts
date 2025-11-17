@@ -184,7 +184,7 @@ export class UserController {
                 { expiresIn: "15min" }
             );
 
-            res.status(200).json({ token, user: { id: user.id, email: user.email, role: user.role } });
+            res.status(200).json({ token });
         } catch (error) {
             res.status(500).json({ error: "Erreur serveur lors de la connexion." });
         }
