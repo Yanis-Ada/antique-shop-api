@@ -189,4 +189,4 @@ export class UserController {
             res.status(500).json({ error: "Erreur serveur lors de la connexion." });
         }
     }
-}
+}     
