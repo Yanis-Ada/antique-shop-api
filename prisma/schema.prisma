@@ -29,5 +29,28 @@ model User {
   role      Role     @default(SELLER)
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
+  furnitures Furniture[]
   @@map("user")
+}
+
+
+enum FurnitureStatus {
+  DRAFT        
+  PENDING      
+  APPROVED     
+  REJECTED     
+  SOLD         
+}
+
+model Furniture {
+  id          Int              @id @default(autoincrement())
+  title       String
+  description String
+  price       Float
+  status      FurnitureStatus  @default(DRAFT)
+  sellerId    Int
+  seller      User             @relation(fields: [sellerId], references: [id])
+  createdAt   DateTime         @default(now()) @map("created_at")
+  updatedAt   DateTime         @updatedAt @map("updated_at")
+  @@map("furniture")
 }
