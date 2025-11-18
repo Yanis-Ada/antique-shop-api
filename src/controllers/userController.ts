@@ -178,6 +178,7 @@ export class UserController {
             }
 
             // Génération du JWT
+            console.log("Clé secrète utilisée pour SIGN:", JWT_SECRET);
             const token = jwt.sign(
                 { userId: user.id, role: user.role },
                 JWT_SECRET,
