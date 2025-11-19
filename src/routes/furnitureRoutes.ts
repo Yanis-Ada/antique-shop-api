@@ -4,9 +4,11 @@ import { FurnitureController } from "../controllers/furnitureController";
 
 const router = Router();
 
-// Route pour créer un meuble
 router.post("/furniture", /* authenticateJWT, */ FurnitureController.createFurniture);
-
-// Tu pourras ajouter d'autres routes ici plus tard (get, update, delete...)
+router.get("/furniture", FurnitureController.getAllFurnitures);
+router.get("/furniture/:id", FurnitureController.getFurnitureById);
+router.put("/furniture/:id", FurnitureController.updateFurniture);
+router.delete("/furniture/:id", FurnitureController.deleteFurniture);
+router.patch("/furniture/:id/submit", FurnitureController.submitFurniture);
 
 export default router;
