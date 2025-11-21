@@ -19,9 +19,9 @@ export class UserController {
             res.status(400).json({ error: "Tous les champs sont requis." });
             return;
         }
-        if (password.length < 8) {
-            res.status(400).json({ error: "Mot de passe trop faible (min 8 caractères)." });
-            return;
+        if (!isValidPassword(password)) {
+        res.status(400).json({ error: "Mot de passe trop faible (min 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre)." });
+        return;
         }
         const existingUser = await prisma.user.findUnique({ where: { email } });
         if (existingUser) {
@@ -44,7 +44,7 @@ export class UserController {
         }
     }
 
-    static async getAllUsers(req: Request, res: Response): Promise<void> {
+    static async getAllUsers(res: Response): Promise<void> {
         try {
             const users = await prisma.user.findMany();
             res.status(200).json(users);

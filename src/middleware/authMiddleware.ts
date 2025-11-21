@@ -20,8 +20,8 @@ export function authenticateJWT(req: Request, res: Response, next: NextFunction)
     console.log("Clé secrète utilisée pour VERIFY:", JWT_SECRET);
     const decoded = jwt.verify(token, JWT_SECRET) as MyJwtPayload;
     req.user = decoded; 
-    console.log(req.user);// Ajoute l'utilisateur décodé à la requête
-    next();
+    console.log(req.user);
+    return next();
   } catch (err) {
     return res.status(401).json({ error: "Token invalide ou expiré." });
   }
@@ -34,7 +34,8 @@ export function authorizeRoles(...allowedRoles: string[]) {
 
     if (!userRole || !allowedRoles.includes(userRole)) {
       return res.status(403).json({ error: "Accès interdit : rôle insuffisant." });
+    } else {
+      return next();
     }
-    next();
   };
 }
