@@ -144,4 +144,41 @@ export class UserController {
             res.status(500).json({ error: "Erreur serveur lors de la suppression de l'utilisateur." });
         }
     }
+
+    static async login(req: Request, res: Response): Promise<void> {
+        const { email, password } = req.body;
+
+        if (!email || !password) {
+            res.status(400).json({ error: "Email et mot de passe requis." });
+            return;
+        }
+
+        try {
+            const user = await prisma.user.findUnique({ where: { email } });
+
+            // Message d'erreur générique pour éviter de donner des infos à un attaquant
+            if (!user) {
+                res.status(401).json({ error: "Identifiants invalides." });
+                return;
+            }
+
+            // Vérification du mot de passe
+            const isMatch = await bcrypt.compare(password, user.password);
+            if (!isMatch) {
+                res.status(401).json({ error: "Identifiants invalides." });
+                return;
+            }
+
+            // Génération du JWT
+            const token = jwt.sign(
+                { userId: user.id, role: user.role },
+                JWT_SECRET,
+                { expiresIn: "15min" }
+            );
+
+            res.status(200).json({ token });
+        } catch (error) {
+            res.status(500).json({ error: "Erreur serveur lors de la connexion." });
+        }
+    }
 }
