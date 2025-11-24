@@ -13,37 +13,42 @@ function isValidPassword(password: string): boolean {
 
 export class UserController {
     static async createUser(req: Request, res: Response): Promise<void> {
-        try {
-        const { email, firstName, lastName, password } = req.body;
-        if (!email || !firstName || !lastName || !password) {
-            res.status(400).json({ error: "Tous les champs sont requis." });
-            return;
-        }
-        if (!isValidPassword(password)) {
-        res.status(400).json({ error: "Mot de passe trop faible (min 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre)." });
-        return;
-        }
-        const existingUser = await prisma.user.findUnique({ where: { email } });
-        if (existingUser) {
-            res.status(400).json({ error: "Email déjà utilisé." });
-            return;
-        }
-        const hashedPassword = await bcrypt.hash(password, 10);
-        const user = await prisma.user.create({
-            data: { email, firstName, lastName, password: hashedPassword, role: $Enums.Role.SELLER },
-        });
-        // Génération du token JWT
-        const token = jwt.sign(
-            { userId: user.id, role: user.role },
-            JWT_SECRET,
-            { expiresIn: "24h" }
-        );
-        res.status(201).json({ token, id: user.id, email: user.email, role: user.role });
+    try {
+            const { email, firstName, lastName, password, role } = req.body;
+            if (!email || !firstName || !lastName || !password) {
+                res.status(400).json({ error: "Tous les champs sont requis." });
+                return;
+            }
+            if (!isValidPassword(password)) {
+                res.status(400).json({ error: "Mot de passe trop faible (min 8 caractères, 1 majuscule, 1 minuscule, 1 chiffre)." });
+                return;
+            }
+            const existingUser = await prisma.user.findUnique({ where: { email } });
+            if (existingUser) {
+                res.status(400).json({ error: "Email déjà utilisé." });
+                return;
+            }
+            const hashedPassword = await bcrypt.hash(password, 10);
+
+            // Vérifie que le rôle est valide, sinon met SELLER par défaut
+            const validRoles = [$Enums.Role.SELLER, $Enums.Role.ADMIN];
+            const userRole = validRoles.includes(role) ? role : $Enums.Role.SELLER;
+
+            const user = await prisma.user.create({
+                data: { email, firstName, lastName, password: hashedPassword, role: userRole },
+            });
+
+            const token = jwt.sign(
+                { userId: user.id, role: user.role },
+                JWT_SECRET,
+                { expiresIn: "24h" }
+            );
+            res.status(201).json({ token, id: user.id, email: user.email, role: user.role });
         } catch (error) {
-        res.status(500).json({ error: "Erreur serveur lors de l'inscription." });
+            res.status(500).json({ error: "Erreur serveur lors de l'inscription." });
         }
     }
-
+    
     static async getAllUsers(res: Response): Promise<void> {
         try {
             const users = await prisma.user.findMany();
