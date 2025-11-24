@@ -1,7 +1,6 @@
 import express, { Express, Request, Response } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
-import session from 'express-session';
 import { initializeDatabase } from './config/database';
 import userRoutes from './routes/userRoutes';
 import furnitureRoutes from './routes/furnitureRoutes';
@@ -22,17 +21,6 @@ app.use(cors({
 // Middleware pour parser le JSON
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
-
-// Configuration des sessions
-app.use(session({
-  secret: process.env.SESSION_SECRET || 'fallback-secret-key',
-  resave: false,
-  saveUninitialized: false,
-  cookie: {
-    secure: process.env.NODE_ENV === 'production', // HTTPS en production
-    maxAge: 24 * 60 * 60 * 1000, // 24 heures
-  },
-}));
 
 // Routes de l'API utilisateurs
 app.use('/api', userRoutes);
