@@ -4,6 +4,7 @@ import dotenv from 'dotenv';
 import session from 'express-session';
 import { initializeDatabase } from './config/database';
 import userRoutes from './routes/userRoutes';
+import furnitureRoutes from './routes/furnitureRoutes';
 
 // Charger les variables d'environnement
 dotenv.config();
@@ -35,6 +36,7 @@ app.use(session({
 
 // Routes de l'API utilisateurs
 app.use('/api', userRoutes);
+app.use('/api/furnitures', furnitureRoutes);
 
 
 // Route de test simple
