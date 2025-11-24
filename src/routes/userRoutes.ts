@@ -8,6 +8,7 @@ router.post('/users', UserController.createUser);
 router.post("/register", UserController.createUser);
 router.post("/login", UserController.login);
 
+router.get('/users/me', authenticateJWT, UserController.getMe);
 router.get("/users", authenticateJWT, authorizeRoles("ADMIN"), UserController.getAllUsers);
 router.get('/users/:id', authenticateJWT, authorizeRoles("ADMIN", "SELLER"), UserController.getUserById);
 router.patch("/users/:id", authenticateJWT, authorizeRoles("ADMIN", "SELLER"), UserController.updateUser);

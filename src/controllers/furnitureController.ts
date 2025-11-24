@@ -16,10 +16,10 @@ export class FurnitureController {
   
     static async createFurniture(req: Request, res: Response): Promise<void> {
       try {
-        const { title, description, price, imageUrl, adminNotes } = req.body;
+        const { title, type, dimension, color, material, description, price, imageUrl, adminNotes } = req.body;
         const sellerId = req.user?.userId;
 
-        if (!title || !description || !price || !sellerId || !imageUrl) {
+        if (!title || !type || !dimension || !color || !material || !description || !price || !sellerId || !imageUrl) {
           res.status(400).json({ error: "Tous les champs sont requis." });
           return;
         }

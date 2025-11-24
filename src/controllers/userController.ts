@@ -181,4 +181,28 @@ export class UserController {
             res.status(500).json({ error: "Erreur serveur lors de la connexion." });
         }
     }
+
+    static async getMe(req: Request, res: Response): Promise<void> {
+        try {
+            const userId = req.user?.userId;
+            if (!userId) {
+                res.status(401).json({ error: "Non authentifié" });
+                return;
+            }
+            const user = await prisma.user.findUnique({ where: { id: userId } });
+            if (!user) {
+                res.status(404).json({ error: "Utilisateur non trouvé" });
+                return;
+            }
+            res.json({
+                firstName: user.firstName,
+                lastName: user.lastName,
+                email: user.email
+            });
+            return;
+        } catch (err) {
+            res.status(500).json({ error: "Erreur serveur" });
+            return;
+        }
+    }
 }

@@ -36,7 +36,7 @@ app.use(session({
 
 // Routes de l'API utilisateurs
 app.use('/api', userRoutes);
-app.use('/api/furnitures', furnitureRoutes);
+app.use('/api', furnitureRoutes);
 
 
 // Route de test simple
